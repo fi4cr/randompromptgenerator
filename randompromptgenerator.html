@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Prompt Generator</title>
+    <style>
+        .input-section {
+            display: inline-block;
+            margin: 0 10px;
+            text-align: center;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f2f2f2;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        select {
+            margin-bottom: 10px;
+        }
+
+        output {
+            display: inline-block;
+            padding: 5px;
+            border: 1px solid #ccc;
+            background-color: white;
+            font-weight: bold;
+            /*width: 100%; /* To make it the same width as the dropdowns */
+            box-sizing: border-box; /* Include padding and border in width */
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="input-section">
+        <label for="inputField1">Persona:</label>
+        <select id="inputField1" onchange="updateOutput()">
+        </select>
+    </div>
+
+    <div class="input-section">
+        <label for="inputField2">Task:</label>
+        <select id="inputField2" onchange="updateOutput()">
+        </select>
+    </div>
+    
+    <div class="input-section">
+        <label for="inputField3">Topic:</label>
+        <select id="inputField3" onchange="updateOutput()">
+        </select>
+    </div>
+    
+    <div class="input-section">
+        <label for="inputField4">Target audience:</label>
+        <select id="inputField4" onchange="updateOutput()">
+        </select>
+    </div>
+    
+    <div class="input-section">
+        <label for="inputField5">Language type:</label>
+        <select id="inputField5" onchange="updateOutput()">
+        </select>
+    </div>
+    
+    <div class="input-section">
+        <label for="inputField6">Language extra aspect:</label>
+        <select id="inputField6" onchange="updateOutput()">
+        </select>
+    </div>
+
+    <div class="input-section">
+    	<button onclick="randomizeValues()">Randomize Values</button>
+        <output id="outputField"></output>
+        <button onclick="copyOutputToClipboard()">Copy to Clipboard</button>
+    </div>
+
+
+    <script>
+        const dropdownValues = [
+            [ "Free-Spirited Surfer",  
+            "Gen X Musician",
+            "Yoga Instructor",
+    "Hipster Barista",
+    "Late Night Talk Show Host",
+    "Swashbuckling Pirate",
+    "Infomercial Guru",
+    "Tech Enthusiast",
+    "Fashion Blogger",
+    "Personal Trainer",
+    "Biomedical Scientist",
+    "Urban Cowboy",
+    "Bibliophile",
+    "Gourmet Chef",
+    "Contemporary Artist",
+    "Masked Vigilante",
+    "Detective Extraordinaire",
+    "Globetrotting Adventurer",
+    "Socialite Philanthropist",
+    "Rockstar Icon"],
+            ["Write a social media post",
+            "Write a Persuasive Essay",
+    "Compose a Short Story",
+    "Craft a Descriptive Nature Scene",
+    "Write a Research Paper",
+    "Create a Dialogue-Driven Scene",
+    "Draft an Instructional Manual",
+    "Write a Poem",
+    "Compose a Travel Blog Entry",
+    "Create a Character Monologue",
+    "Write an Opinion Editorial (Op-Ed)",
+    "Craft a Children's Story",
+    "Write a Eulogy",
+    "Create a Product Review",
+    "Write a Science Fiction Scenario",
+    "Compose a Letter of Gratitude",
+    "Craft a Mystery Plot Synopsis",
+    "Write a Humorous Anecdote",
+    "Create a Social Media Post",
+    "Write a Historical Fiction Excerpt",
+    "Compose a Speech for a Special Occasion"],
+            [    " on Ostraconology",
+    "on Zymology",
+    "on Agalmatophilia",
+    "on Orthopterology",
+    "on Cetology",
+    "on Psilosophy",
+    "on Uroscopy",
+    "on Scatology",
+    "on Dendrochronology",
+    "on Myrmecology",
+    "on Cryonics",
+    "on Knuckerology",
+    "on Septuagint Studies",
+    "on Zuihitsu",
+    "on Scolopendra Taxonomy",
+    "on Necrobiome Studies",
+    "on Xylotomy",
+    "on Bathybius Haeckelii Research",
+    "on Paraskavedekatriaphobia",
+    "on Chorology",
+    "on Algal Ballistics",
+    "on Formicarium Design",
+    "on Nebulaphotography",
+    "on Haikuology",
+    "on Sardoodledom Studies",
+    "on Squat Lobster Taxonomy",
+    "on Nomophobia",
+    "on Arachibutyrophobia",
+    "on Chronomentrophobia",
+    "on Lachanophobia",
+    "on Pogonology",
+    "on Hippopotomonstrosesquippedaliophobia",
+    "on Catoptric Tristesse",
+    "on Anemone-philia",
+    "on Bibliosmia",
+    "on Eccentric Completism",
+    "on Eccentric Completism",
+    "on Platonism",
+    "on Aristotelianism",
+    "on Stoicism",
+    "on Epicureanism",
+    "on Skepticism",
+    "on Cynicism",
+    "on Existentialism",
+    "on Pragmatism",
+    "on Rationalism",
+    "on Empiricism",
+    "on Transcendentalism",
+    "on Utilitarianism",
+    "on Feminism",
+    "on Postmodernism",
+    "on Structuralism",
+    "on Deconstructionism",
+    "on Phenomenology",
+    "on Logical Positivism",
+    "on Objectivism",
+    "on Nihilism"],
+            ["Nature Lovers",
+            "Small Business Owners",
+    "Corporate Executives",
+    "Legal Professionals",
+    "Nonprofit Organizations",
+    "Creative Professionals (Designers, Writers, Artists)",
+    "Parents of Newborns",
+    "Online Course Takers",
+    "Social Media Influencers",
+    "B2B (Business-to-Business) Clients",
+    "Retailers and Wholesalers",
+    "Sustainable and Eco-conscious Consumers",
+        "Professionals",
+    "Students (College/University)",
+    "Entrepreneurs",
+    "Tech Enthusiasts",
+    "Fitness Enthusiasts",
+    "Gamers",
+    "Book Lovers",
+    "Foodies",
+    "Travelers",
+    "Fashion Enthusiasts",
+    "Health and Wellness Seekers",
+    "DIY and Craft Enthusiasts",
+    "Pet Owners",
+    "Music Lovers"],
+            [    "Colloquial language",
+            "Casual language",
+    "Conversational language",
+    "Informal language",
+    "Formal language",
+    "Professional language",
+    "Academic language",
+    "Scholarly language",
+    "Technical language",
+    "Simplified language",
+    "Complex language",
+    "Persuasive language",
+    "Descriptive language",
+    "Concise language",
+    "Elaborate language",
+    "Engaging language",
+    "Humorous language",
+    "Poetic language",
+    "Jargon-heavy language",
+    "Accessible language"],
+            [   "Cultural References",
+    "Idioms",
+    "Proverbs",
+    "Mythological Allusions",
+    "Historical Allusions",
+    "Literary Allusions",
+    "Tone Shifts",
+    "Register Shifts",
+    "Concision",
+    "Clarity",
+    "Juxtaposition",
+    "Imagery",
+    "Anecdotes",
+    "Analogies",
+    "Intertextuality",
+    "Tone Consistency",
+    "Anaphor",
+    "Neologism",
+    "Archaisms",
+    "Ellipsis",
+    "Collocation",
+    "Direct Address",
+    "Euphony",
+    "Cacophony",
+    "Epiphora",
+    "Transitions",
+    "Connotation Clusters",
+    "Syntax Variation",
+    "Subtext",
+    "Irony",
+    "Clichés",
+    "Rephrasing",
+    "Idiosyncratic Language",
+    "Contrasts and Parallels",
+    "Cultural Sensitivity",
+    "Meta-commentary",
+    "Allusion",
+    "Subtle Foreshadowing",
+    "Inclusive Language",
+    "Nonlinear Structure",
+    "Rhythm and Meter",
+    "Epanalepsis",
+    "Amplification",
+    "Onomatopoeia",
+    "Understatement",
+    "Transgressive Language",
+    "Metaphor",
+    "Simile",
+    "Personification",
+    "Hyperbole",
+    "Understatement",
+    "Irony",
+    "Oxymoron",
+    "Synecdoche",
+    "Metonymy",
+    "Alliteration",
+    "Assonance",
+    "Consonance",
+    "Onomatopoeia",
+    "Repetition",
+    "Anaphora",
+    "Epistrophe",
+    "Chiasmus",
+    "Antithesis",
+    ]
+        ];
+
+        // Populate dropdown options using the provided arrays
+        for (let i = 1; i <= 6; i++) {
+            const selectElement = document.getElementById("inputField" + i);
+            dropdownValues[i - 1].forEach(value => {
+                const option = document.createElement("option");
+                option.value = value;
+                option.textContent = value;
+                selectElement.appendChild(option);
+            });
+        }
+
+        function randomizeValues() {
+            for (let i = 1; i <= 6; i++) {
+                const selectElement = document.getElementById("inputField" + i);
+                const randomIndex = Math.floor(Math.random() * dropdownValues[i - 1].length);
+                selectElement.value = dropdownValues[i - 1][randomIndex];
+            }
+            updateOutput();
+        }
+
+        function updateOutput() {
+            const outputElement = document.getElementById("outputField");
+            const inputValues = [];
+
+            // Retrieve selected values from all 6 dropdown menus
+            for (let i = 1; i <= 6; i++) {
+                const selectElement = document.getElementById("inputField" + i);
+                const selectedValue = selectElement.value;
+                inputValues.push(selectedValue);
+            }
+
+            // Combine the input values and display in the output field
+            const formattedOutput = `You are a ${inputValues[0]}. ${inputValues[1]} ${inputValues[2]}. Your target audience is ${inputValues[3]}. Use a ${inputValues[4]} with some ${inputValues[5]}.`;
+
+            outputElement.textContent = formattedOutput;
+        }
+    
+        updateOutput()
+        
+        function copyOutputToClipboard() {
+            const outputElement = document.getElementById("outputField");
+            const textToCopy = outputElement.textContent;
+
+            const tempInput = document.createElement("textarea");
+            tempInput.value = textToCopy;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+        }
+    </script>
+</body>
+</html>
+
